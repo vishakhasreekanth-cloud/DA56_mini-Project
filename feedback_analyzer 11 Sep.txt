@@ -1,0 +1,109 @@
+# Step 1: Preloaded Feedbacks (Given Data)
+
+feedback_data = {
+    'S_No': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'Name': ['Ravi', 'Meera', 'Sam', 'Anu', 'Raj', 'Divya', 'Arjun', 'Kiran', 'Leela', 'Nisha'],
+    'Feedback': [
+        '  Very GOOD Service!!!',
+        'poor support,   not happy   ',
+        'GREAT experience! will come again.',
+        'okay   okay...',
+        '  not   BAD',
+        'Excellent care, excellent staff!',
+        'good food and good ambience!',
+        'Poor response and poor handling of issue',
+        'Satisfied. But could be better.',
+        'Good support... quick service.'
+    ],
+    'Rating': [5, 2, 5, 3, 2, 5, 4, 1, 3, 4]
+}
+
+# Step 2: Add More Feedbacks
+num_to_add = int(input("How many more feedbacks do you want to add? "))
+
+for _ in range(num_to_add):
+    # Auto-increment S_No starting from 11 (or 1 + current length)
+    s_no = len(feedback_data['S_No']) + 1
+    name = input("Enter Name: ")
+    fb_text = input("Enter Written Feedback (text): ")
+    rating = int(input("Enter Rating (1-5): "))
+    
+    # Append to the dictionary
+    feedback_data['S_No'].append(s_no)
+    feedback_data['Name'].append(name)
+    feedback_data['Feedback'].append(fb_text)
+    feedback_data['Rating'].append(rating)
+
+print("\n--- Additional Feedback Collected ---\n")
+
+
+# Step 3: Text Cleaning
+def clean_text(text):
+    # Remove specified punctuation: . , ! ?
+    for char in [".", ",", "!", "?"]:
+        text = text.replace(char, "")
+    
+    # Convert to lower case
+    text = text.lower()
+    
+    # split() without args strips extra/leading/trailing spaces and splits on whitespace
+    # ' '.join(...) reconstructs the text with exact single spaces
+    cleaned = ' '.join(text.split())
+    return cleaned
+
+# Apply cleaning to all feedback entries in-place
+feedback_data['Feedback'] = [clean_text(fb) for fb in feedback_data['Feedback']]
+
+# Step 4: Word Count Insights
+def count_word_in_feedbacks(word):
+    word = word.lower()
+    count = 0
+    for fb in feedback_data['Feedback']:
+        # Split cleaned feedback into individual words for accurate word matching
+        words_in_fb = fb.split()
+        if word in words_in_fb:
+            count += 1
+    return count
+
+print("--- Word Insights ---")
+print(f"Number of feedbacks containing 'good': {count_word_in_feedbacks('good')}")
+print(f"Number of feedbacks containing 'poor': {count_word_in_feedbacks('poor')}")
+print(f"Number of feedbacks containing 'excellent': {count_word_in_feedbacks('excellent')}")
+print()
+
+# Step 5: Final Summary & Insights
+print("--- Final Cleaned Feedback Data ---")
+print(feedback_data)
+print()
+
+# 1. Average Rating
+avg_rating = sum(feedback_data['Rating']) / len(feedback_data['Rating'])
+print(f"Average Rating: {avg_rating:.2f}")
+
+# 2. Longest Comment (by word count)
+longest_fb = max(feedback_data['Feedback'], key=lambda fb: len(fb.split()))
+print(f"Longest Comment (by word count): \"{longest_fb}\"")
+
+# 3. Unique Words
+all_words = []
+for fb in feedback_data['Feedback']:
+    all_words.extend(fb.split())
+
+unique_words = sorted(list(set(all_words)))
+print(f"List of Unique Words: {unique_words}")
+print()
+
+# Optional: Sort Feedbacks by Rating (Highest to Lowest)
+# Zip all lists together, sort by rating descending (index 3), and unzip
+zipped_data = zip(
+    feedback_data['S_No'],
+    feedback_data['Name'],
+    feedback_data['Feedback'],
+    feedback_data['Rating']
+)
+
+sorted_entries = sorted(zipped_data, key=lambda item: item[3], reverse=True)
+
+print("--- Sorted Feedbacks (Highest to Lowest Rating) ---")
+for s_no, name, fb, rating in sorted_entries:
+    print(f"S.No: {s_no} | Name: {name} | Rating: {rating} | Feedback: {fb}")
